@@ -1,8 +1,10 @@
 from robocorp.tasks import task
 from robocorp import browser
 import requests
+from RPA.Tables import Tables
+from robocorp.log import critical, warn, info, debug, exception
 
-
+orders_table = []
 
 @task
 def order_robots_from_RobotSpareBin():
@@ -21,6 +23,7 @@ def order_robots_from_RobotSpareBin():
 
     open_robot_order_website()
     orders = get_orders()
+    convert_csv_to_a_table()
 
 def open_robot_order_website():
     """
@@ -37,3 +40,8 @@ def get_orders():
     with open("orders.csv", 'wb') as stream:
         stream.write(response.content)
     return "orders.csv"
+
+def convert_csv_to_a_table():
+    library = Tables()
+    orders_table = library.read_table_from_csv("orders.csv", columns=["Order number", "Head", "Body", "Legs", "Address"])
+    #print(orders_table)
