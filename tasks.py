@@ -24,6 +24,7 @@ def order_robots_from_RobotSpareBin():
     open_robot_order_website()
     orders = get_orders()
     convert_csv_to_a_table()
+    loop_through_orders()
 
 def open_robot_order_website():
     """
@@ -45,3 +46,16 @@ def convert_csv_to_a_table():
     library = Tables()
     orders_table = library.read_table_from_csv("orders.csv", columns=["Order number", "Head", "Body", "Legs", "Address"])
     #print(orders_table)
+
+def loop_through_orders():
+    """
+    Loop through the orders table and place an order for each row.
+    """
+    for order in orders_table:
+        place_an_order(order)
+
+def place_an_order(order):
+    #info(order)
+    #print(order)
+    pass
+    
