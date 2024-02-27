@@ -4,8 +4,6 @@ import requests
 from RPA.Tables import Tables
 from robocorp.log import critical, warn, info, debug, exception
 
-orders_table = []
-
 @task
 def order_robots_from_RobotSpareBin():
     """
@@ -23,8 +21,8 @@ def order_robots_from_RobotSpareBin():
 
     open_robot_order_website()
     orders = get_orders()
-    convert_csv_to_a_table()
-    loop_through_orders()
+    orders_table = convert_csv_to_a_table(orders)
+    loop_through_orders(orders_table)
 
 def open_robot_order_website():
     """
@@ -42,12 +40,12 @@ def get_orders():
         stream.write(response.content)
     return "orders.csv"
 
-def convert_csv_to_a_table():
+def convert_csv_to_a_table(csv_file):
     library = Tables()
-    orders_table = library.read_table_from_csv("orders.csv", columns=["Order number", "Head", "Body", "Legs", "Address"])
-    #print(orders_table)
+    orders_table = library.read_table_from_csv(csv_file, columns=["Order number", "Head", "Body", "Legs", "Address"])
+    return orders_table
 
-def loop_through_orders():
+def loop_through_orders(orders_table):
     """
     Loop through the orders table and place an order for each row.
     """
@@ -55,7 +53,9 @@ def loop_through_orders():
         place_an_order(order)
 
 def place_an_order(order):
+    """
+    Places a single order and saves the receipt along with an image of the robot
+    """
     #info(order)
-    #print(order)
-    pass
+    print(f"{order}")
     
