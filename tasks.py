@@ -3,6 +3,9 @@ from robocorp import browser
 import requests
 from RPA.Tables import Tables
 from robocorp.log import critical, warn, info, debug, exception
+from RPA.PDF import PDF
+
+pdf = PDF()
 
 @task
 def order_robots_from_RobotSpareBin():
@@ -20,7 +23,7 @@ def order_robots_from_RobotSpareBin():
     )
 
     open_robot_order_website()
-    close_annoying_modal()
+    #close_annoying_modal()
     orders = get_orders()
     orders_table = convert_csv_to_a_table(orders)
     loop_through_orders(orders_table)
@@ -64,10 +67,8 @@ def place_an_order(order):
     """
     Places a single order and saves the receipt along with an image of the robot
     """
-    #close_annoying_modal()
+    close_annoying_modal()
     fill_the_form(order)
-    info(order)
-    print(f"{order}")
     
 def fill_the_form(order):
     page = browser.page()
@@ -75,5 +76,14 @@ def fill_the_form(order):
     page.locator("id=id-body-" + order['Body']).check()
     page.fill("//input[@placeholder='Enter the part number for the legs']", order["Legs"])
     page.fill("id=address", order["Address"])
-    page.click("text=Preview")
-    page.click("text=Order")
+    page.locator("#preview").click()
+    page.locator("#order").click()
+    while page.locator("#order").count() > 0:
+        page.locator("#order").click()
+    order_number = page.locator(".badge-success").text_content()
+    store_receipt_as_pdf(order_number)
+    page.click("id=order-another")
+
+def store_receipt_as_pdf(order_number):
+    page = browser.page()
+    pdf.html_to_pdf(page.inner_html("id=receipt"), f"output/receipts/{order_number}.pdf")
