@@ -16,10 +16,11 @@ def order_robots_from_RobotSpareBin():
     browser.configure(
     browser_engine="chrome",
     headless=False,
-    slowmo=1000
+    #slowmo=1000
     )
 
     open_robot_order_website()
+    close_annoying_modal()
     orders = get_orders()
     orders_table = convert_csv_to_a_table(orders)
     loop_through_orders(orders_table)
@@ -28,7 +29,14 @@ def open_robot_order_website():
     """
     Opens the robot order website.
     """
-    browser.goto("https://robotsparebinindustries.com/")
+    browser.goto("https://robotsparebinindustries.com/#/robot-order")
+
+def close_annoying_modal():
+    """
+    Closes the welcome modal
+    """
+    page = browser.page()
+    page.click("button:text('OK')")
 
 def get_orders():
     """
@@ -56,6 +64,16 @@ def place_an_order(order):
     """
     Places a single order and saves the receipt along with an image of the robot
     """
-    #info(order)
+    #close_annoying_modal()
+    fill_the_form(order)
+    info(order)
     print(f"{order}")
     
+def fill_the_form(order):
+    page = browser.page()
+    page.select_option("id=head", order["Head"])
+    page.locator("id=id-body-" + order['Body']).check()
+    page.fill("//input[@placeholder='Enter the part number for the legs']", order["Legs"])
+    page.fill("id=address", order["Address"])
+    page.click("text=Preview")
+    page.click("text=Order")
