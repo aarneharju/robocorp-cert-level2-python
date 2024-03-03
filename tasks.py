@@ -23,7 +23,6 @@ def order_robots_from_RobotSpareBin():
     )
 
     open_robot_order_website()
-    #close_annoying_modal()
     orders = get_orders()
     orders_table = convert_csv_to_a_table(orders)
     loop_through_orders(orders_table)
@@ -81,9 +80,23 @@ def fill_the_form(order):
     while page.locator("#order").count() > 0:
         page.locator("#order").click()
     order_number = page.locator(".badge-success").text_content()
-    store_receipt_as_pdf(order_number)
+    order_pdf_path = store_receipt_as_pdf(order_number)
+    print(f"Order pdf path: {order_pdf_path}")
+    robot_image = screenshot_robot(order_number)
+    embed_screenshot_to_receipt(robot_image, order_pdf_path)
     page.click("id=order-another")
 
 def store_receipt_as_pdf(order_number):
     page = browser.page()
     pdf.html_to_pdf(page.inner_html("id=receipt"), f"output/receipts/{order_number}.pdf")
+    return f"output/receipts/{order_number}.pdf"
+
+def screenshot_robot(order_number):
+    page = browser.page()
+    page.locator("#robot-preview-image").screenshot(path=f"output/screenshots/{order_number}.png")
+    return f"output/screenshots/{order_number}.png"
+
+def embed_screenshot_to_receipt(screenshot, order_pdf_path):
+    pdf.add_files_to_pdf(files = [screenshot], target_document = f"{order_pdf_path}", append = True)
+
+
