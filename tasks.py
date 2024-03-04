@@ -19,7 +19,7 @@ def order_robots_from_RobotSpareBin():
     """
     browser.configure(
     browser_engine="chrome",
-    headless=False,
+    headless=True,
     #slowmo=1000
     )
 
