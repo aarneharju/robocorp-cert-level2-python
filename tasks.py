@@ -4,6 +4,7 @@ import requests
 from RPA.Tables import Tables
 from robocorp.log import critical, warn, info, debug, exception
 from RPA.PDF import PDF
+from RPA.Archive import Archive
 
 pdf = PDF()
 
@@ -84,6 +85,7 @@ def fill_the_form(order):
     print(f"Order pdf path: {order_pdf_path}")
     robot_image = screenshot_robot(order_number)
     embed_screenshot_to_receipt(robot_image, order_pdf_path)
+    archive_receipts()
     page.click("id=order-another")
 
 def store_receipt_as_pdf(order_number):
@@ -99,4 +101,7 @@ def screenshot_robot(order_number):
 def embed_screenshot_to_receipt(screenshot, order_pdf_path):
     pdf.add_files_to_pdf(files = [screenshot], target_document = f"{order_pdf_path}", append = True)
 
+def archive_receipts():
+    archive_library = Archive()
+    archive_library.archive_folder_with_zip(folder="output/receipts", archive_name="output/receipts.zip", include="*.pdf")
 
