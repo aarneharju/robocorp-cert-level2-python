@@ -89,7 +89,7 @@ def fill_the_form(order):
     robot_image = screenshot_robot(order_number)
     embed_screenshot_to_receipt(robot_image, order_pdf_path)
     archive_receipts()
-    page.click("id=order-another")
+    page.locator("id=order-another").click()
 
 def store_receipt_as_pdf(order_number):
     """
