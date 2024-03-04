@@ -71,6 +71,9 @@ def place_an_order(order):
     fill_the_form(order)
     
 def fill_the_form(order):
+    """
+    Fills the order form and makes the purchase
+    """
     page = browser.page()
     page.select_option("id=head", order["Head"])
     page.locator("id=id-body-" + order['Body']).check()
@@ -89,19 +92,31 @@ def fill_the_form(order):
     page.click("id=order-another")
 
 def store_receipt_as_pdf(order_number):
+    """
+    Saves the purchase receipt to a pdf. Pdf name contains the order number.
+    """
     page = browser.page()
     pdf.html_to_pdf(page.inner_html("id=receipt"), f"output/receipts/{order_number}.pdf")
     return f"output/receipts/{order_number}.pdf"
 
 def screenshot_robot(order_number):
+    """
+    Saves an image of the robot that was ordered
+    """
     page = browser.page()
     page.locator("#robot-preview-image").screenshot(path=f"output/screenshots/{order_number}.png")
     return f"output/screenshots/{order_number}.png"
 
 def embed_screenshot_to_receipt(screenshot, order_pdf_path):
+    """
+    Embeds the image of the robot that was ordered to the receipt pdf
+    """
     pdf.add_files_to_pdf(files = [screenshot], target_document = f"{order_pdf_path}", append = True)
 
 def archive_receipts():
+    """
+    Archives all the receipts to a single zip file to the output folder
+    """
     archive_library = Archive()
     archive_library.archive_folder_with_zip(folder="output/receipts", archive_name="output/receipts.zip", include="*.pdf")
 
